@@ -19,9 +19,20 @@ const planTripButton = document.querySelector('button-container');
 
 
 
-const getDestination = async function(query) {
+const getAddress = async function(query) {
   const url = `${mapboxApi}${query}${bbox}${mapboxKey}`
   const response = await fetch(url);
   const data = await response.json();
   return data;
 }
+
+const featureHtmlBuilder = function(feature) {
+  `
+<li data-long="${feature.center[0]}" data-lat="${feature.center[1]}">
+          <div class="name">${feature.text}</div>
+          <div>${feature.properties.address}</div>
+        </li>`
+
+}
+
+console.log(getDestination('starbucks'))
