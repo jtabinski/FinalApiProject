@@ -11,11 +11,11 @@ const bbox = '.json?bbox=-97.325875, 49.766204, -96.953987, 49.99275'
 //-97.325875, 49.766204, -96.953987, 49.99275   
 //"https://api.mapbox.com/geocoding/v5/mapbox.places/starbucks.json?bbox=-77.083056,38.908611,-76.997778,38.959167&access_token=pk.eyJ1IjoianRhYmluc2tpIiwiYSI6ImNrcDVrbzRvMjBiZHIyb3AyM3NiZGw1am4ifQ.digShKRT7xLV-Va_Uwwn0g"
 
-const originForm = document.querySelector('origin-form');
-const destinationForm = document.querySelector('destination-form');
-const startingLocationsElement = document.querySelector('origins');
-const destinationsElement = document.querySelector('destinations');
-const planTripButton = document.querySelector('button-container');
+const originForm = document.querySelector('.origin-form');
+const destForm = document.querySelector('.destination-form');
+const originElem = document.querySelector('.origins');
+const destElem = document.querySelector('.destinations');
+const planTripButton = document.querySelector('.button-container');
 
 
 
@@ -24,15 +24,54 @@ const getAddress = async function(query) {
   const response = await fetch(url);
   const data = await response.json();
   return data;
-}
+};
 
 const featureHtmlBuilder = function(feature) {
-  `
+ return `
 <li data-long="${feature.center[0]}" data-lat="${feature.center[1]}">
           <div class="name">${feature.text}</div>
-          <div>${feature.properties.address}</div>
+          <div>${feature.place_name.split(', ')[1]}</div>
         </li>`
 
 }
+destForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const query = e.target[0].value;
+  getAddress(query)
+  .then((data) => {
+    const featureList = [...data.features];
+    renderHtmlDestList(featureList);
+    console.log(featureList);
+    });
+  });
 
-console.log(getDestination('starbucks'))
+  originForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const query = e.target[0].value;
+    getAddress(query)
+    .then((data) => {
+      const featureList = [...data.features];
+      renderHtmlOriginList(featureList);
+      console.log(featureList);
+      });
+    });
+
+const renderHtmlDestList = function (featureList) {
+  destElem.innerHTML = '';
+  for (let feature of featureList) {
+    destElem.innerHTML += featureHtmlBuilder(feature);
+}
+};
+
+
+const renderHtmlOriginList = function (featureList) {
+  originElem.innerHTML = '';
+  for (let feature of featureList) {
+    originElem.innerHTML += featureHtmlBuilder(feature);
+}
+};
+
+
+
+
+console.log(getAddress('starbucks'));
